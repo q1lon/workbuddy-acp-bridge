@@ -1,0 +1,4 @@
+/.venv
+/tests
+/.agents
+/src/workbuddy_acp_bridge/__pycache__

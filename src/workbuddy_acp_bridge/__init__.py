@@ -1,0 +1,1 @@
+"""Expose WorkBuddy connector capabilities to CLI through MCP and ACP."""

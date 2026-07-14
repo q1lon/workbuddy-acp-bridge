@@ -38,7 +38,7 @@ WorkBuddy Remote Gateway
 
 ## 环境要求
 
-- Windows 11。
+- Windows 11 或 macOS 14+（Sonoma / Sequoia）。
 - Python 3.11 或更高版本。
 - Codex CLI，或其他支持 MCP stdio 的 CLI 客户端。
 - WorkBuddy 已启动。
@@ -46,7 +46,7 @@ WorkBuddy Remote Gateway
 
 ## 安装
 
-在 PowerShell 中执行：
+### Windows（PowerShell）
 
 ```powershell
 cd "E:\个人项目\workbuddy-acp-bridge"
@@ -54,17 +54,40 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e .
 ```
 
+### macOS / Linux（bash / zsh）
+
+```bash
+cd /path/to/workbuddy-acp-bridge
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
 以 Codex CLI 为例注册 MCP 服务：
+
+### Windows
 
 ```powershell
 codex mcp add workbuddy -- "E:\个人项目\workbuddy-acp-bridge\.venv\Scripts\python.exe" -m workbuddy_acp_bridge.server
 ```
 
-使用其他支持 MCP stdio 的 CLI 时，按该客户端的配置方式注册同一 Python 启动命令即可。
+### macOS / Linux
+
+```bash
+codex mcp add workbuddy -- "$(pwd)/.venv/bin/python" -m workbuddy_acp_bridge.server
+```
 
 检查配置：
 
+### Windows
+
 ```powershell
+codex mcp list
+```
+
+### macOS / Linux
+
+```bash
 codex mcp list
 ```
 
@@ -158,10 +181,18 @@ codex mcp list
 
 ### WorkBuddy 数据目录
 
-默认从 `%USERPROFILE%\.workbuddy\sessions\*.json` 发现 Gateway。若 WorkBuddy 数据目录不同，可在 CLI 客户端注册 MCP 服务时设置环境变量。以 Codex CLI 为例：
+默认从 `~/.workbuddy/sessions/*.json` 发现 Gateway。若 WorkBuddy 数据目录不同，可在 CLI 客户端注册 MCP 服务时设置环境变量。以 Codex CLI 为例：
+
+### Windows（PowerShell）
 
 ```powershell
 codex mcp add workbuddy --env WORKBUDDY_HOME="D:\CustomWorkBuddyData" -- "E:\个人项目\workbuddy-acp-bridge\.venv\Scripts\python.exe" -m workbuddy_acp_bridge.server
+```
+
+### macOS / Linux（bash / zsh）
+
+```bash
+codex mcp add workbuddy --env WORKBUDDY_HOME="/path/to/custom/WorkBuddyData" -- "$(pwd)/.venv/bin/python" -m workbuddy_acp_bridge.server
 ```
 
 安全限制如下：
@@ -173,8 +204,18 @@ codex mcp add workbuddy --env WORKBUDDY_HOME="D:\CustomWorkBuddyData" -- "E:\个
 
 ## 测试
 
+### Windows（PowerShell）
+
 ```powershell
 cd "E:\个人项目\workbuddy-acp-bridge"
+python -m pytest -q
+```
+
+### macOS / Linux（bash / zsh）
+
+```bash
+cd /path/to/workbuddy-acp-bridge
+source .venv/bin/activate
 python -m pytest -q
 ```
 
@@ -184,11 +225,13 @@ python -m pytest -q
 
 ### 未找到 WorkBuddy 会话目录
 
-先启动 WorkBuddy，并确认 `%USERPROFILE%\.workbuddy\sessions` 下存在 JSON 会话文件。
+先启动 WorkBuddy，并确认 `~/.workbuddy/sessions`（Windows 下为 `%USERPROFILE%\.workbuddy\sessions`）下存在 JSON 会话文件。
 
 ### 找不到可用 Gateway
 
 WorkBuddy 重启时端口会变化。保持 WorkBuddy 运行，再重新调用 `workbuddy_status`；桥接器每次都会重新发现端口，不需要手工更新。
+
+**macOS 用户**: 如果 WorkBuddy 通过 Wine / CrossOver 运行，确保 `WORKBUDDY_HOME` 环境变量指向正确的 WorkBuddy 数据目录。
 
 ### 读取任务被拒绝
 

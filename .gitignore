@@ -1,4 +1,5 @@
 /.venv
-/tests
 /.agents
-/src/workbuddy_acp_bridge/__pycache__
+__pycache__/
+*.pyc
+uv.lock

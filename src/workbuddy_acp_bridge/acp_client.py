@@ -332,7 +332,7 @@ class WorkBuddyAcpClient:
 
         try:
             await self._post_message(message)
-        except Exception as exc:
+        except Exception:
             pending = self._pending.pop(request_id, None)
             if pending and not pending.done():
                 pending.set_exception(AcpError("WorkBuddy ACP 传输失败。"))
